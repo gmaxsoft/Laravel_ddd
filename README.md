@@ -17,7 +17,7 @@ Aplikacja Laravel z architekturą **Domain-Driven Design (DDD)**. Logika bizneso
 |---------|-------------|
 | **Backend** | PHP 8.2+, Laravel 12 |
 | **Frontend** | Vite 7, Tailwind CSS 4, Axios |
-| **Baza danych** | Eloquent ORM (SQLite/MySQL/PostgreSQL) |
+| **Baza danych** | MySQL, Eloquent ORM |
 | **Testy** | PHPUnit 11 |
 | **Narzędzia** | Laravel Pint, Laravel Sail, Laravel Boost |
 
@@ -122,8 +122,13 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# Migracje
+# Baza danych MySQL – utwórz bazę, np.:
+# mysql -u root -p -e "CREATE DATABASE laravel_ddd CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+# Skonfiguruj DB_DATABASE, DB_USERNAME, DB_PASSWORD w .env
+
+# Migracje i seedery
 php artisan migrate
+php artisan db:seed
 
 # Build frontendu
 npm run build
@@ -133,6 +138,15 @@ php artisan serve
 # lub
 composer run dev
 ```
+
+### Konto demo
+
+Po uruchomieniu `php artisan db:seed` dostępne jest konto do logowania:
+
+| Pole   | Wartość          |
+|--------|------------------|
+| E-mail | demo@example.com |
+| Hasło  | Demo123!         |
 
 ## Testy
 
