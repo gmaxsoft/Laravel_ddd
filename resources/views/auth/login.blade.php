@@ -26,7 +26,12 @@
         </div>
 
         <div>
-            <label for="password" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-1">Hasło</label>
+            <div class="flex items-center justify-between mb-1">
+                <label for="password" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">Hasło</label>
+                <a href="{{ route('password.request') }}" class="text-sm text-[#F53003] dark:text-[#FF4433] hover:underline">
+                    Zapomniałeś hasła?
+                </a>
+            </div>
             <input type="password" name="password" id="password" required autocomplete="current-password"
                 class="w-full px-4 py-2 rounded-lg border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] text-[#1b1b18] dark:text-[#EDEDEC] focus:ring-2 focus:ring-[#F53003] focus:border-transparent">
         </div>
