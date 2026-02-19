@@ -154,6 +154,47 @@ Po uruchomieniu `php artisan db:seed` dostępne jest konto do logowania:
 php artisan test
 ```
 
+### Struktura testów
+
+| Katalog | Opis |
+|---------|------|
+| `tests/Unit/Domains/` | Testy jednostkowe Actions (RegisterUserAction, LoginUserAction, UpdateProfileDataAction, UpdatePasswordAction) |
+| `tests/Feature/Auth/` | Testy feature: logowanie, rejestracja |
+| `tests/Feature/User/` | Testy feature: profil użytkownika, zmiana hasła |
+
+### Uruchomienie
+
+```bash
+# Wszystkie testy
+php artisan test --compact
+
+# Tylko testy jednostkowe
+php artisan test --compact tests/Unit
+
+# Tylko testy feature
+php artisan test --compact tests/Feature
+
+# Konkretny plik
+php artisan test --compact tests/Feature/Auth/LoginTest.php
+```
+
+Testy używają SQLite w pamięci (konfiguracja w `phpunit.xml`).
+
+## GitHub Actions
+
+Projekt wykorzystuje CI uruchamiany przy każdym push i pull request na branch `main`.
+
+**Plik:** `.github/workflows/ci.yml`
+
+**Kroki workflow:**
+
+1. Checkout repozytorium
+2. Setup PHP (8.2, 8.3, 8.4 – matrix)
+3. Cache zależności Composer
+4. `composer install`
+5. **Pint** – sprawdzenie stylu kodu (`vendor/bin/pint --test`)
+6. **Testy** – `php artisan test --compact`
+
 ## Licencja
 
 Projekt wykorzystuje framework Laravel, dostępny na licencji [MIT](https://opensource.org/licenses/MIT).
