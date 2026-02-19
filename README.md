@@ -7,53 +7,139 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## O projekcie
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplikacja Laravel z architekturą **Domain-Driven Design (DDD)**. Logika biznesowa jest zorganizowana w domenach, co ułatwia skalowanie, utrzymanie i testowanie aplikacji.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack technologiczny
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Warstwa | Technologia |
+|---------|-------------|
+| **Backend** | PHP 8.2+, Laravel 12 |
+| **Frontend** | Vite 7, Tailwind CSS 4, Axios |
+| **Baza danych** | Eloquent ORM (SQLite/MySQL/PostgreSQL) |
+| **Testy** | PHPUnit 11 |
+| **Narzędzia** | Laravel Pint, Laravel Sail, Laravel Boost |
 
-## Learning Laravel
+## Domain-Driven Design (DDD)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Domain-Driven Design** to podejście do projektowania oprogramowania, w którym nacisk kładzie się na modelowanie logiki biznesowej wokół **domen** – wyodrębnionych obszarów wiedzy specyficznych dla problemu, który rozwiązuje aplikacja.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Kluczowe założenia DDD
 
-## Laravel Sponsors
+- **Domena** – obszar biznesowy (np. Auth, User, Order). Każda domena zawiera własną logikę, modele i reguły.
+- **Izolacja** – domeny są niezależne; zmiany w jednej nie powinny wymagać modyfikacji innych.
+- **Ubiquitous Language** – wspólny język między programistami a ekspertami biznesowymi.
+- **Bounded Context** – wyraźne granice kontekstu, w którym obowiązują określone reguły.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Struktura domeny w projekcie
 
-### Premium Partners
+Każda domena zawiera:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Models** – encje i modele Eloquent specyficzne dla domeny
+- **Controllers** – kontrolery obsługujące żądania HTTP
+- **Requests** – Form Requesty do walidacji
+- **Actions** – akcje biznesowe (Single Responsibility)
 
-## Contributing
+## Wprowadzone zmiany dla DDD
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Struktura katalogów `app/Domains/`
 
-## Code of Conduct
+Główny katalog logiki biznesowej został przeniesiony do `app/Domains/`. Utworzono domeny:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Auth** – autentykacja, logowanie, rejestracja
+- **User** – zarządzanie użytkownikami
 
-## Security Vulnerabilities
+### 2. Namespace i autoloading
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Mapowanie PSR-4 `App\` → `app/` w `composer.json` obsługuje klasy z domen:
 
-## License
+- `App\Domains\Auth\Controllers\LoginController`
+- `App\Domains\User\Models\User`
+- `App\Domains\Auth\Actions\LoginUserAction`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Routing domenowy (`bootstrap/app.php`)
+
+W `withRouting()` dodano callback `then`, który umożliwia ładowanie tras specyficznych dla domen. Obecnie jest pusty – gotowy do użycia po przeniesieniu tras z `routes/web.php` do domen.
+
+### 4. Plik `routes/domains.php`
+
+Utworzono placeholder dla tras domenowych. W przyszłości można tam dołączać pliki tras z poszczególnych domen:
+
+```php
+require base_path('app/Domains/Auth/routes.php');
+require base_path('app/Domains/User/routes.php');
+```
+
+## Struktura projektu
+
+```
+laravel_ddd/
+├── app/
+│   ├── Domains/                    # Logika biznesowa (DDD)
+│   │   ├── Auth/
+│   │   │   ├── Actions/
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   └── Requests/
+│   │   └── User/
+│   │       ├── Actions/
+│   │       ├── Controllers/
+│   │       ├── Models/
+│   │       └── Requests/
+│   ├── Http/
+│   │   └── Controllers/
+│   ├── Models/
+│   └── Providers/
+├── bootstrap/
+│   └── app.php                     # Konfiguracja routingu z callback dla domen
+├── config/
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
+├── public/
+├── resources/
+│   ├── css/
+│   └── views/
+├── routes/
+│   ├── web.php
+│   ├── console.php
+│   └── domains.php                 # Placeholder dla tras domenowych
+├── storage/
+├── tests/
+└── vendor/
+```
+
+## Uruchomienie
+
+```bash
+# Instalacja zależności
+composer install
+npm install
+
+# Konfiguracja
+cp .env.example .env
+php artisan key:generate
+
+# Migracje
+php artisan migrate
+
+# Build frontendu
+npm run build
+
+# Serwer deweloperski
+php artisan serve
+# lub
+composer run dev
+```
+
+## Testy
+
+```bash
+php artisan test
+```
+
+## Licencja
+
+Projekt wykorzystuje framework Laravel, dostępny na licencji [MIT](https://opensource.org/licenses/MIT).
